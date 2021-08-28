@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -111,10 +112,19 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Sending...");
                     System.out.println("l'array è lungo: " + myarray.length);
                     OutputStream os=sock.getOutputStream();
+
+                    //invio il nome del file e la sua dimensione
+                    DataOutputStream dos = new DataOutputStream(os);
+                    dos.writeUTF(myFile.getName());
+                    dos.writeLong(myarray.length);
+                    dos.write(myarray, 0, myarray.length);
+                    dos.flush();
+
+                    //invio della immagine
                     os.write(myarray, 0, myarray.length);
                     System.out.println("Sono qui");
                     os.flush();
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
                     sock.close();
                     /*if(aspetta(sock) != true){//aspetto che il computer abbia salvato l'immagine
                         System.out.println("Si è verificato un errore nella ricezione dell'ok");
@@ -142,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
                 //sock.close();   //chiusura socket
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } //catch (InterruptedException e) {
+               // e.printStackTrace();
+           // }
         }
     }
 
