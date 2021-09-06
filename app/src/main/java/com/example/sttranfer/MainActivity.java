@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import java.io.BufferedInputStream;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int SELECT_PICTURE = 1;
+    private Context context;
 
     private ImageView img;
     private int port = 4747;
@@ -73,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
+                intent.setType("*/*");
+                String[] mimetypes = {"image/*", "video/*"};
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); //per selezionare più immagini alla volta
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes); //per selezionare più immagini alla volta
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
             }
@@ -111,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Sequenza: " + i + "~Percorso:" + imagesEncodedList.get(i));
                     myFile = new File (imagesEncodedList.get(i));
                     //path.setText("Image Path: " + imagesEncodedList.get(i));
+                    if(myFile.length() >= 2147483647){  //controllo sulla grandezza massima del file da inviare
+                        CharSequence txt = "File" + myFile.getName() + "is is too heavy";
+                        Toast fileSizeEr = Toast.makeText(context, txt, Toast.LENGTH_SHORT);
+                        fileSizeEr.show();
+                    }
                     byte[] myarray = new byte [(int) myFile.length()];
                     fis = new FileInputStream(myFile);
                     BufferedInputStream bis = new BufferedInputStream(fis);
@@ -159,8 +168,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             } //catch (InterruptedException e) {
-               // e.printStackTrace();
-           // }
+            // e.printStackTrace();
+            // }
         }
     }
 
@@ -202,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
                     imagesEncodedList = new ArrayList<String>();
+                    context = getApplicationContext();  //CIAO
                     if (data.getData() != null) {
                         Uri selectedImageUri = data.getData();
 
@@ -238,14 +248,14 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                } else {
-                    Toast.makeText(this, "You haven't picked Image",
-                            Toast.LENGTH_LONG).show();
-                }
-            }catch(Exception e){
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "You haven't picked Image",
+                        Toast.LENGTH_LONG).show();
             }
+        }catch(Exception e){
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
         }
+    }
 
     /*public String getPath(Uri uri){
         String[] projection = { MediaStore.Images.Media.DATA};
@@ -254,10 +264,10 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }*/
-/*
-    * Checks if the app has permission to write to device storage
-    * If the app does not has permission then the user will be prompted to grant permissions
- */
+    /*
+     * Checks if the app has permission to write to device storage
+     * If the app does not has permission then the user will be prompted to grant permissions
+     */
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
