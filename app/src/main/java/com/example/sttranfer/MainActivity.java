@@ -61,12 +61,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.opening);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        startPage();
         setContentView(R.layout.activity_main);
         verifyStoragePermissions(MainActivity.this);
         img = (ImageView) findViewById(R.id.ivPic);
@@ -84,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Button send = (Button) findViewById(R.id.bSend);
-        final TextView status = (TextView) findViewById(R.id.tvStatus);
 
         send.setOnClickListener(new View.OnClickListener(){
 
@@ -280,5 +274,9 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+    public void startPage(){
+        Intent intent = new Intent(this, Start.class);
+        startActivity(intent);
     }
 }
