@@ -7,5 +7,5 @@
     <color name="teal_700">#707CBF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFF</color>
-    <color name = "GreyBackGround">#606060</color>
+    <color name = "GreyBackGround">#FFFFFF</color>
 </resources>
